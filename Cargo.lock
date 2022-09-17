@@ -403,18 +403,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "installer"
-version = "0.1.0"
-dependencies = [
- "directories",
- "futures-util",
- "indicatif",
- "reqwest",
- "tokio",
- "zip-extensions",
-]
-
-[[package]]
 name = "instant"
 version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -480,6 +468,18 @@ name = "matches"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
+
+[[package]]
+name = "mcinstall"
+version = "0.1.1"
+dependencies = [
+ "directories",
+ "futures-util",
+ "indicatif",
+ "reqwest",
+ "tokio",
+ "zip-extensions",
+]
 
 [[package]]
 name = "memchr"

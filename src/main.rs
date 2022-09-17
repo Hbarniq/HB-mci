@@ -1,26 +1,21 @@
-use std::cmp::min;
-use std::fs::File;
-use std::io;
-use std::io::Write;
-use std::fs;
-use std::path::Path;
-use std::path::PathBuf;
+use std::{io, io::Write, fs, fs::File, path::{Path, PathBuf}, cmp::min,};
 use reqwest::Client;
 use indicatif::{ProgressBar, ProgressStyle};
 use futures_util::StreamExt;
 use zip_extensions::*;
 
-
-//todo - delete the mods folder if update = true
-//install the versions into the mclauncher
-
-
 #[tokio::main]
 async fn main() {
-    let update = Path::new("./mods").exists();
+    let update: bool = Path::new("./mods").exists();
     let mcmodszip = if update == false {"./modpack/mcmods.zip"} else {"./mcmods.zip"};
-    let mods_dir = if update == false {"./modpack"} else {"./"};
+    let mods_dir = if update == false {"./modpack/"} else {"./"};
     if update == false {fs::create_dir(&mods_dir).ok();}
+    else {
+        println!("Found existing modpack updating...");
+        fs::remove_dir_all(format!("{}mods", mods_dir)).expect("Failed to delete file.");
+        fs::remove_dir_all(format!("{}versions", mods_dir)).expect("Failed to delete file.");
+        println!("Deleted old mods and installations")
+    }
 
     download_file(&Client::new(), "https://drive.google.com/uc?export=download&id=1qa7gThngkqNooUweuyVs6Kes8w_pIJ0l&confirm=t", mcmodszip).await.unwrap();
     
@@ -30,16 +25,13 @@ async fn main() {
     zip_extract(&mczip, &extract_dir).expect("Could not extract zip file");
     println!("Extracted archive!");
     
-    //fs::copy(format!("{mods_dir}/versions") ,format!("{mods_dir}/config")).expect("failed to move file");
-    
     println!("Cleaning up");
-    fs::remove_file(mcmodszip).expect("File delete failed");
+    fs::remove_file(&mcmodszip).expect("Failed to delete file.");
         
     end()    
 }
 //download fn
 pub async fn download_file(client: &Client, url: &str, path: &str) -> Result<(), String> {
-    // Reqwest setup
     let res = client
         .get(url)
         .send()
@@ -49,14 +41,13 @@ pub async fn download_file(client: &Client, url: &str, path: &str) -> Result<(),
         .content_length()
         .ok_or(format!("Failed to get content length from '{}'", &url))?;
     
-        // Indicatif setup
+        // Indicatif
         let pb = ProgressBar::new(total_size);
         pb.set_style(ProgressStyle::default_bar()
         .template("{msg}\n[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})")
         .progress_chars("#>-"));
         pb.set_message(&format!("Downloading to {}", path));
         
-        // download chunks
         let mut file = File::create(path).or(Err(format!("Failed to create file '{}'", path)))?;
         let mut downloaded: u64 = 0;
         let mut stream = res.bytes_stream();
@@ -75,7 +66,9 @@ pub async fn download_file(client: &Client, url: &str, path: &str) -> Result<(),
     }
     
 fn end() {
+    //i know this is stupid but its just to stop the code before exiting
     let mut end = String::new();
-    println!("Press enter to exit");
+    println!("\nPress enter to exit");
     io::stdin().read_line(&mut end).ok();
+    std::process::exit(0)
 }
