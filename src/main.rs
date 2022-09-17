@@ -3,6 +3,8 @@ use reqwest::Client;
 use indicatif::{ProgressBar, ProgressStyle};
 use futures_util::StreamExt;
 use zip_extensions::*;
+use directories::BaseDirs;
+use fs_extra::dir::{move_dir, CopyOptions};
 
 #[tokio::main]
 async fn main() {
@@ -24,11 +26,18 @@ async fn main() {
     let extract_dir = PathBuf::from(&mods_dir);
     zip_extract(&mczip, &extract_dir).expect("Could not extract zip file");
     println!("Extracted archive!");
+
+    if let Some(base_dirs) = BaseDirs::new() {
+        let appdata = base_dirs.data_dir().to_str().expect("An error occured");
+        let options = CopyOptions::new();
+        move_dir(format!("{}versions", mods_dir), format!(r"{}\.minecraft\", appdata), &options).ok();
+        println!(r"Sent versions to {}\.minecraft\versions", appdata)
+    }
     
     println!("Cleaning up");
     fs::remove_file(&mcmodszip).expect("Failed to delete file.");
         
-    end()    
+    end()
 }
 //download fn
 pub async fn download_file(client: &Client, url: &str, path: &str) -> Result<(), String> {
