@@ -1,4 +1,4 @@
-use std::{io, io::Write, fs, fs::File, path::{Path, PathBuf}, cmp::min,};
+use std::{io, io::Write, fs, fs::File, path::{Path, PathBuf}, cmp::min};
 use reqwest::Client;
 use indicatif::{ProgressBar, ProgressStyle};
 use futures_util::StreamExt;
@@ -14,8 +14,8 @@ async fn main() {
     if update == false {fs::create_dir(&mods_dir).ok();}
     else {
         println!("Found existing modpack updating...");
-        fs::remove_dir_all(format!("{}mods", mods_dir)).expect("Failed to delete file.");
-        fs::remove_dir_all(format!("{}versions", mods_dir)).expect("Failed to delete file.");
+        fs::remove_dir_all(format!("{}mods", mods_dir)).ok();
+        fs::remove_dir_all(format!("{}versions", mods_dir)).ok();
         println!("Deleted old mods and installations")
     }
 
@@ -30,12 +30,13 @@ async fn main() {
     if let Some(base_dirs) = BaseDirs::new() {
         let appdata = base_dirs.data_dir().to_str().expect("An error occured");
         let options = CopyOptions::new();
-        move_dir(format!("{}versions", mods_dir), format!(r"{}\.minecraft\", appdata), &options).ok();
-        println!(r"Sent versions to {}\.minecraft\versions", appdata)
+        move_dir(format!("{}versions", &mods_dir), format!(r"{}\.minecraft\", &appdata), &options).ok();
+        println!(r"Sent versions to {}\.minecraft\versions", &appdata)
     }
     
     println!("Cleaning up");
-    fs::remove_file(&mcmodszip).expect("Failed to delete file.");
+    fs::remove_file(&mcmodszip).ok();
+    fs::remove_dir_all(format!("{}versions", mods_dir)).ok();
         
     end()
 }
