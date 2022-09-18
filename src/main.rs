@@ -1,10 +1,13 @@
-use std::{io, io::Write, fs, fs::File, path::{Path, PathBuf}, cmp::min};
-use reqwest::Client;
-use indicatif::{ProgressBar, ProgressStyle};
-use futures_util::StreamExt;
-use zip_extensions::*;
-use directories::BaseDirs;
-use fs_extra::dir::{move_dir, CopyOptions};
+//mod jsonparse;
+use {
+    std::{io, io::Write, fs, fs::File, path::{Path, PathBuf}, cmp::min},
+    reqwest::Client,
+    indicatif::{ProgressBar, ProgressStyle},
+    futures_util::StreamExt,
+    zip_extensions::*,
+    directories::BaseDirs,
+    fs_extra::dir::{move_dir, CopyOptions}
+};
 
 #[tokio::main]
 async fn main() {
@@ -17,10 +20,10 @@ async fn main() {
         fs::remove_dir_all(format!("{}mods", mods_dir)).ok();
         fs::remove_dir_all(format!("{}versions", mods_dir)).ok();
         println!("Deleted old mods and installations")
-    }
-
-    download_file(&Client::new(), "https://drive.google.com/uc?export=download&id=1qa7gThngkqNooUweuyVs6Kes8w_pIJ0l&confirm=t", mcmodszip).await.unwrap();
+    };
     
+    download_file(&Client::new(), "https://drive.google.com/uc?export=download&id=1qa7gThngkqNooUweuyVs6Kes8w_pIJ0l&confirm=t", mcmodszip).await.unwrap();
+
     println!("\nExtracting archive...");
     let mczip = PathBuf::from(&mcmodszip);
     let extract_dir = PathBuf::from(&mods_dir);
@@ -32,8 +35,8 @@ async fn main() {
         let options = CopyOptions::new();
         move_dir(format!("{}versions", &mods_dir), format!(r"{}\.minecraft\", &appdata), &options).ok();
         println!(r"Sent versions to {}\.minecraft\versions", &appdata)
-    }
-    
+    };
+
     println!("Cleaning up");
     fs::remove_file(&mcmodszip).ok();
     fs::remove_dir_all(format!("{}versions", mods_dir)).ok();
@@ -41,7 +44,7 @@ async fn main() {
     end()
 }
 //download fn
-pub async fn download_file(client: &Client, url: &str, path: &str) -> Result<(), String> {
+async fn download_file(client: &Client, url: &str, path: &str) -> Result<(), String> {
     let res = client
         .get(url)
         .send()
