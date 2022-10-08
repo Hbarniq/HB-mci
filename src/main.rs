@@ -1,3 +1,4 @@
+mod modpacks;
 use {
     std::{io, io::Write, fs, fs::File, path::{Path, PathBuf}, cmp::min},
     reqwest::Client,
@@ -5,11 +6,13 @@ use {
     futures_util::StreamExt,
     zip_extensions::*,
     directories::BaseDirs,
-    fs_extra::dir::{move_dir, CopyOptions}
+    fs_extra::dir::{move_dir, CopyOptions},
+    dialoguer::{theme::ColorfulTheme, Confirm}
 };
 
 #[tokio::main]
 async fn main() {
+    let downloadurl = modpacks::pick_modpack().await;
     let update: bool = Path::new("./mods").exists();
     let mcmodszip = if update == false {"./modpack/mcmods.zip"} else {"./mcmods.zip"};
     let mods_dir = if update == false {"./modpack/"} else {"./"};
@@ -21,7 +24,7 @@ async fn main() {
         println!("Deleted old mods and installations")
     };
     
-    download_file(&Client::new(), "https://drive.google.com/uc?export=download&id=1qa7gThngkqNooUweuyVs6Kes8w_pIJ0l&confirm=t", mcmodszip).await.unwrap();
+    download_file(&Client::new(), downloadurl, mcmodszip).await.unwrap();
 
     println!("\nExtracting archive...");
     let mczip = PathBuf::from(&mcmodszip);
@@ -39,6 +42,19 @@ async fn main() {
     println!("Cleaning up");
     fs::remove_file(&mcmodszip).ok();
     fs::remove_dir_all(format!("{}versions", mods_dir)).ok();
+
+    if update == false {
+    if Confirm::with_theme(&ColorfulTheme::default())
+        .with_prompt("Show install help?")
+        .interact()
+        .unwrap()
+    {
+        println!("\nInstall help:");
+        println!("\nCreate a new installation in your minecraft launcher\nwith the path of where you installed the modpack");
+        println!("Then find the version corresponding to what modpack you installed\nfor example fabric 1.18.2 will need \nsomething similar to: \"fabric-loader-0.14.9-1.18.2\"");
+        println!("Your loader version has alredy been installed to your minecraft launcher");
+        println!("\nAdditionally it is recommended to give the game between 4-10gb of ram in the advanced options");
+    }}
         
     end()
 }
