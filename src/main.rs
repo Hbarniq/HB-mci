@@ -6,8 +6,7 @@ use {
     futures_util::StreamExt,
     zip_extensions::*,
     directories::BaseDirs,
-    fs_extra::dir::{move_dir, CopyOptions},
-    dialoguer::{theme::ColorfulTheme, Confirm}
+    fs_extra::dir::{move_dir, CopyOptions}
 };
 
 #[tokio::main]
@@ -43,22 +42,10 @@ async fn main() {
     fs::remove_file(&mcmodszip).ok();
     fs::remove_dir_all(format!("{}versions", mods_dir)).ok();
 
-    if update == false {
-    if Confirm::with_theme(&ColorfulTheme::default())
-        .with_prompt("Show install help?")
-        .interact()
-        .unwrap()
-    {
-        println!("\nInstall help:");
-        println!("\nCreate a new installation in your minecraft launcher\nwith the path of where you installed the modpack");
-        println!("Then find the version corresponding to what modpack you installed\nfor example fabric 1.18.2 will need \nsomething similar to: \"fabric-loader-0.14.9-1.18.2\"");
-        println!("Your loader version has alredy been installed to your minecraft launcher");
-        println!("\nAdditionally it is recommended to give the game between 4-10gb of ram in the advanced options");
-    }}
+    modpacks::helpmsg(update);
         
     end()
 }
-//download fn
 async fn download_file(client: &Client, url: &str, path: &str) -> Result<(), String> {
     let res = client
         .get(url)
@@ -96,7 +83,7 @@ async fn download_file(client: &Client, url: &str, path: &str) -> Result<(), Str
 fn end() {
     //i know this is stupid but its just to stop the code before exiting
     let mut end = String::new();
-    println!("\nPress enter to exit");
+    println!("\nAll done! Press enter to exit");
     io::stdin().read_line(&mut end).ok();
     std::process::exit(0)
 }

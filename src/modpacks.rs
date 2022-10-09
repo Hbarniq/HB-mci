@@ -1,4 +1,4 @@
-use dialoguer::{theme::ColorfulTheme, Select};
+use dialoguer::{theme::ColorfulTheme, Select, Confirm};
 
 pub async fn pick_modpack() -> &'static str {
     let modpacks = &[
@@ -19,4 +19,19 @@ pub async fn pick_modpack() -> &'static str {
     else {""};
 
     downloadurl
+}
+
+pub fn helpmsg(update: bool) {
+    if update == false {
+        if Confirm::with_theme(&ColorfulTheme::default())
+            .with_prompt("Show install help?")
+            .interact()
+            .unwrap()
+        {
+            println!("\nInstall help:");
+            println!("\nCreate a new installation in your minecraft launcher\nwith the path of where you installed the modpack");
+            println!("Then find the version corresponding to what modpack you installed\nfor example fabric 1.18.2 will need \nsomething similar to: \"fabric-loader-0.14.9-1.18.2\"");
+            println!("Your loader version has alredy been installed to your minecraft launcher");
+            println!("\nAdditionally it is recommended to give the game between 4-10gb of ram in the advanced options");
+        }}
 }
