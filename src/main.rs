@@ -47,6 +47,7 @@ async fn main() {
     end()
 }
 async fn download_file(client: &Client, url: &str, path: &str) -> Result<(), String> {
+    println!("Waiting for response...");
     let res = client
         .get(url)
         .send()
