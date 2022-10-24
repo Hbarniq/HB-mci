@@ -18,8 +18,13 @@ async fn main() {
     if update == false {fs::create_dir(&mods_dir).ok();}
     else {
         println!("Found existing modpack updating...");
-        fs::remove_dir_all(format!("{}mods", mods_dir)).ok();
+        fs::remove_dir_all(format!("{}mods", mods_dir)).unwrap_or_else(|_e| {
+            println!("Unable to delete old mods this might be because you are running the game.");
+            modpacks::tryagain(mods_dir)
+
+        });
         fs::remove_dir_all(format!("{}versions", mods_dir)).ok();
+
         println!("Deleted old mods and installations")
     };
     
@@ -42,7 +47,7 @@ async fn main() {
     fs::remove_file(&mcmodszip).ok();
     fs::remove_dir_all(format!("{}versions", mods_dir)).ok();
 
-    modpacks::helpmsg(update);
+    if update == false {modpacks::helpmsg();}
         
     end()
 }
@@ -81,7 +86,7 @@ async fn download_file(client: &Client, url: &str, path: &str) -> Result<(), Str
         return Ok(());
     }
     
-fn end() {
+pub fn end() {
     //i know this is stupid but its just to stop the code before exiting
     let mut end = String::new();
     println!("\nAll done! Press enter to exit");
