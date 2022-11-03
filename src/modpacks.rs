@@ -5,7 +5,7 @@ use {
 };
 
 pub async fn pick_modpack() -> &'static str {
-    let modpacks = &["1.18.2 fabric modpack", "1.19.2 preformance modpack"];
+    let modpacks = &["1.18.2 fabric modpack", "1.19.2 preformance modpack", "1.18.2 FULL fabric modpack (includes server side only)"];
 
     let picked_modpack = Select::with_theme(&ColorfulTheme::default())
         .with_prompt("Pick modpack to install:")
@@ -18,6 +18,8 @@ pub async fn pick_modpack() -> &'static str {
         "https://drive.google.com/uc?export=download&id=1qa7gThngkqNooUweuyVs6Kes8w_pIJ0l&confirm=t"
     } else if modpacks[picked_modpack] == "1.19.2 preformance modpack" {
         "https://drive.google.com/uc?export=download&id=1ga7ySowdBsR0QxxEyQbEaKWF95JhERXe&confirm=t"
+    } else if modpacks[picked_modpack] == "1.18.2 FULL fabric modpack (includes server side only)" {
+        "https://drive.google.com/uc?export=download&id=1c2jfZFPAh1OU7VYuZHN00XMK3kOPiDT2&confirm=t"
     } else {
         ""
     };
