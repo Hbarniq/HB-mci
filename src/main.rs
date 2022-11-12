@@ -27,14 +27,11 @@ async fn main() {
         println!("Argument not found\nInvalid argument: {}", args[1]); end(); ""
     };
     let update: bool = Path::new("./mods").exists();
-    let mcmodszip = if update == false {
-        "./modpack/mcmods.zip"
-    } else {
-        "./mcmods.zip"
-    };
-    let mods_dir = if update == false { "./modpack/" } else { "./" };
+    let emptydir: bool = if update == false && fs::read_dir("./").unwrap().count() == 1 {true} else {false};
+    let mcmodszip = if update == false && emptydir == false {"./modpack/mcmods.zip"} else {"./mcmods.zip"};
+    let mods_dir = if update == false && emptydir == false { "./modpack/" } else { "./" };
     if update == false {
-        fs::create_dir(&mods_dir).ok();
+        if emptydir == false {fs::create_dir(&mods_dir).ok();}
     } else {
         println!("Found existing modpack updating...");
         fs::remove_dir_all(format!("{}mods", mods_dir)).unwrap_or_else(|_e| {
@@ -46,9 +43,7 @@ async fn main() {
         println!("Deleted old mods and installations")
     };
 
-    download_file(&Client::new(), downloadurl, mcmodszip)
-        .await
-        .unwrap();
+    download_file(&Client::new(), downloadurl, mcmodszip).await.unwrap();
 
     println!("\nExtracting archive...");
     let mczip = PathBuf::from(&mcmodszip);
