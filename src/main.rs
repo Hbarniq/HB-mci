@@ -1,7 +1,7 @@
 mod modpacks;
 use {
     directories::BaseDirs,
-    fs_extra::dir::{move_dir, CopyOptions},
+    fs_extra::{move_items, dir::CopyOptions},
     futures_util::StreamExt,
     indicatif::{ProgressBar, ProgressStyle},
     reqwest::Client,
@@ -53,13 +53,12 @@ async fn main() {
 
     if let Some(base_dirs) = BaseDirs::new() {
         let appdata = base_dirs.data_dir().to_str().expect("An error occured");
-        let options = CopyOptions::new();
-        move_dir(
-            format!("{}versions", &mods_dir),
-            format!(r"{}\.minecraft\", &appdata),
+        let options = CopyOptions { overwrite: false, skip_exist: true, buffer_size: 64000, copy_inside: false, content_only: false, depth: 0 };
+        move_items(
+            &[format!("{}versions", &mods_dir)],
+            format!(r"{}\.minecraft", &appdata),
             &options,
-        )
-        .ok();
+        ).expect("Couldnt do shit");
         println!(r"Sent versions to {}\.minecraft\versions", &appdata)
     };
 
