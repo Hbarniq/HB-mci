@@ -1,6 +1,6 @@
 [package]
 name = "mcinstall"
-version = "0.3.2"
+version = "0.3.4"
 edition = "2021" # I know this will annoy someone :)
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -17,6 +17,6 @@ dialoguer = "0.10.2"
 
 [profile.release]
 strip = true
-opt-level = "s"
+opt-level = "z"
 lto = true
 codegen-units = 1

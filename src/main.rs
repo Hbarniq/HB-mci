@@ -58,7 +58,7 @@ async fn main() {
             &[format!("{}versions", &mods_dir)],
             format!(r"{}\.minecraft", &appdata),
             &options,
-        ).expect("Couldnt do shit");
+        ).expect("Couldnt move versions to their folder");
         println!(r"Sent versions to {}\.minecraft\versions", &appdata)
     };
 
