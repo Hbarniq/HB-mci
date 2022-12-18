@@ -17,6 +17,6 @@ dialoguer = "0.10.2"
 
 [profile.release]
 strip = true
-opt-level = "z"
+opt-level = "z" # most optimized (forgot to push this on its own)
 lto = true
 codegen-units = 1
