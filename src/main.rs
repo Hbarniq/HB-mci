@@ -42,8 +42,11 @@ async fn main() {
 
         println!("Deleted old mods and installations")
     };
-
-    download_file(&Client::new(), downloadurl, mcmodszip).await.unwrap();
+    
+    let cwd = env::current_dir().unwrap();
+    let mut a_path = cwd.into_os_string().into_string().unwrap();
+    if mcmodszip != "./mcmods.zip" { a_path.push_str(r"\modpack"); }
+    download_file(&Client::new(), downloadurl, mcmodszip, &a_path).await.unwrap();
 
     println!("\nExtracting archive...");
     let mczip = PathBuf::from(&mcmodszip);
@@ -72,7 +75,7 @@ async fn main() {
 
     end()
 }
-async fn download_file(client: &Client, url: &str, path: &str) -> Result<(), String> {
+async fn download_file(client: &Client, url: &str, path: &str, a_path: &str) -> Result<(), String> {
     println!("Waiting for response...");
     let res = client
         .get(url)
@@ -88,7 +91,7 @@ async fn download_file(client: &Client, url: &str, path: &str) -> Result<(), Str
     pb.set_style(ProgressStyle::default_bar()
         .template("{msg}\n[{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})")
         .progress_chars("#>-"));
-    pb.set_message(&format!("Downloading to {}", path));
+    pb.set_message(&format!("Downloading to {}", a_path));
 
     let mut file = File::create(path).or(Err(format!("Failed to create file '{}'", path)))?;
     let mut downloaded: u64 = 0;
