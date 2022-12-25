@@ -4,7 +4,10 @@ use {
     std::fs,
 };
 
-pub async fn pick_modpack() -> &'static str {
+pub async fn pick_modpack(update: &str) -> &'static str {
+    if update == "gameupdate" {
+        return "https://drive.google.com/uc?export=download&id=1qa7gThngkqNooUweuyVs6Kes8w_pIJ0l&confirm=t";
+    }
     let modpacks = &["AHMS modpack", "1.19.2 preformance modpack", "1.18.2 FULL fabric modpack (includes server side only)"];
 
     let picked_modpack = Select::with_theme(&ColorfulTheme::default())

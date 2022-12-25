@@ -20,9 +20,9 @@ use {
 async fn main() {
     let args: Vec<String> = env::args().collect();
     let downloadurl = if args.get(1) == None {
-        modpacks::pick_modpack().await
+        modpacks::pick_modpack("").await
     } else if args[1] == "gameupdate" {
-        "https://drive.google.com/uc?export=download&id=1qa7gThngkqNooUweuyVs6Kes8w_pIJ0l&confirm=t"
+        modpacks::pick_modpack("gameupdate").await
     } else {
         println!("Argument not found\nInvalid argument: {}", args[1]); end(); ""
     };
@@ -106,7 +106,7 @@ async fn download_file(client: &Client, url: &str, path: &str, a_path: &str) -> 
         pb.set_position(new);
     }
 
-    pb.finish_with_message(&format!("Downloaded modpack to {}", path));
+    pb.finish_with_message(&format!("Downloaded modpack to {}", a_path));
     return Ok(());
 }
 
